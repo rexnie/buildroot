@@ -1,0 +1,23 @@
+#!/bin/sh
+
+pathname=$1
+
+if [ x"$pathname" = "x" -o ! -e "$pathname" ]; then
+    echo "Usage: $(basename $0) <pathname>"
+    echo "    -- Copy host '<pathname>' to guest $share_dir/ directory"
+    exit 1
+fi
+
+. $(dirname $0)/system.conf
+
+filename=$(basename $pathname)
+
+echo "#1# check '$filename' in current directory"
+ls -l $pathname
+
+echo "#2# start copy..."
+$ssh_run_base mkdir -p $share_dir/
+$ssh_scp_base $pathname $guest_address:$share_dir/$filename
+
+echo "#3# check '$filename' in guest $share_dir/"
+$ssh_run_base ls -l $share_dir/$filename
